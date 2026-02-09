@@ -2,8 +2,7 @@ import axios from './axiosInstance'; // فرض بر این است که این ف
 
 // دریافت اطلاعات آماری داشبورد
 export const getDashboardStats = async () => {
-    // در سیستم واقعی آدرس دقیق را جایگزین کنید، مثلا /dashboard/report
-    // فعلا فرض میکنیم آدرس این است:
+
     const response = await axios.get('/dashboard/report-full'); 
     return response.data;
 };

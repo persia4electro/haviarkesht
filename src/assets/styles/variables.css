@@ -1,0 +1,9 @@
+:root {
+  --primary-color: #5b2d8b; /* بنفش پررنگ */
+  --secondary-color: #f4f1fa; /* زمینه روشن */
+  --accent-color: #8e44ad; /* بنفش متوسط */
+  --text-color: #2e2e2e;
+  --white: #fff;
+  --border-radius: 10px;
+  --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+}

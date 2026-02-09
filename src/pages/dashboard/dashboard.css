@@ -1,0 +1,83 @@
+.dashboard-container {
+  display: flex;
+  height: 100vh;
+  background: #f4f1fa;
+  font-family: "Public Sans", sans-serif;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #5b2d8b;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding: 25px;
+}
+
+.logo {
+  font-size: 22px;
+  margin-bottom: 40px;
+}
+
+.sidebar nav a {
+  display: block;
+  padding: 12px;
+  border-radius: 10px;
+  color: #fff;
+  text-decoration: none;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sidebar nav a:hover,
+.sidebar nav a.active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.logout {
+  margin-top: auto;
+  padding: 12px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  cursor: pointer;
+}
+
+/* MAIN */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+/* CONTENT */
+.content {
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+}
+
+.content h2 {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: right;
+  border-bottom: 1px solid #e0daf0;
+}

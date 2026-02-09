@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { getReportFull } from "../../api/dashboard.api";
 import { AuthContext } from "../../context/AuthContext";
-import "../dashboard/dashboard.css";
+import "./dashboard.css";
 
 export default function Dashboard() {
   const [report, setReport] = useState([]);

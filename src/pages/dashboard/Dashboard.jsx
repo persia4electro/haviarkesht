@@ -5,9 +5,9 @@ import { AuthContext } from "../../context/AuthContext";
 import "./dashboard.css";
 
 export default function Dashboard() {
-  const [report, setReport] = useState([]);
+  const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   // دسترسی به تابع خروج
   const { logoutUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -15,9 +15,10 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchReport = async () => {
       try {
-        // فرض بر این است که این تابع دیتا را برمی‌گرداند
+        setLoading(true);
+        // درخواست POST به اندپوینت report-full با پارامتر 13
         const data = await getReportFull(13);
-        setReport(data || []);
+        setReport(data);
       } catch (err) {
         console.error("خطا در دریافت گزارش:", err);
       } finally {
@@ -32,9 +33,15 @@ export default function Dashboard() {
     navigate("/login");
   };
 
+  // تابع فرمت‌دهی اعداد (فارسی و جداکننده هزارگان)
+  const formatNumber = (num) => {
+    if (num === null || num === undefined) return "۰";
+    return Number(num).toLocaleString("fa-IR");
+  };
+
   return (
     <div className="dashboard-layout">
-      {/* سایدبار کناری */}
+      {/* سایدبار کناری - دقیقاً طبق فایل اصلی شما */}
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="logo-icon">🌿</div>
@@ -84,55 +91,82 @@ export default function Dashboard() {
               <div className="spinner"></div>
               <p>در حال بارگذاری اطلاعات...</p>
             </div>
-          ) : (
+          ) : report ? (
             <>
-              {/* کارت‌های آماری نمونه برای زیبایی */}
-              <div className="stats-grid">
-                <div className="stat-card">
-                  <h3>تعداد رکوردها</h3>
-                  <p className="stat-value">{report.length}</p>
-                </div>
-                <div className="stat-card green">
-                  <h3>سال زراعی</h3>
-                  <p className="stat-value">1403-04</p>
-                </div>
-                <div className="stat-card dark">
-                  <h3>وضعیت سیستم</h3>
-                  <p className="stat-value">فعال</p>
-                </div>
+              {/* بخش نمایش سال زراعی */}
+              <div style={{ marginBottom: '20px', color: '#666', fontSize: '0.9rem' }}>
+                  اطلاعات مربوط به: <strong>{report.crop_year_name || "سال زراعی ۱۳"}</strong>
               </div>
 
-              {/* جدول داده‌ها */}
-              <section className="table-container fade-in-up">
-                <div className="table-header">
-                  <h3>گزارش جامع سال محصول 13</h3>
-                  <button className="export-btn">خروجی اکسل</button>
-                </div>
+              {/* گرید کارت‌ها - منطبق با تصویر ۲ */}
+              <div className="stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
                 
-                <div className="table-responsive">
-                  <table>
-                    <thead>
-                      <tr>
-                        {report.length > 0 ? (
-                          Object.keys(report[0]).map((key) => <th key={key}>{key}</th>)
-                        ) : (
-                          <th>داده‌ای موجود نیست</th>
-                        )}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {report.map((row, idx) => (
-                        <tr key={idx}>
-                          {Object.values(row).map((val, i) => (
-                            <td key={i}>{val}</td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                {/* ردیف ۱ */}
+                <div className="stat-card" style={{ borderRight: '4px solid #dc3545' }}>
+                  <h3>مانده فعلی در حساب پیمانکار</h3>
+                  <p className="stat-value" style={{ color: report.current_contractor_remaining_balance < 0 ? '#dc3545' : '#28a745' }}>
+                    {formatNumber(report.current_contractor_remaining_balance)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span>
+                  </p>
                 </div>
-              </section>
+
+                <div className="stat-card">
+                  <h3>تعداد قرارداد کشاورزان</h3>
+                  <p className="stat-value">{formatNumber(report.farmers_commitment_count)}</p>
+                </div>
+
+                <div className="stat-card">
+                  <h3>کل تناژ تحویلی کشاورزان</h3>
+                  <p className="stat-value">{formatNumber(report.total_delivered_tonnage)} <span style={{fontSize: '0.8rem', color: '#888'}}>تن</span></p>
+                </div>
+
+                <div className="stat-card">
+                  <h3>جمع بدهی به کشاورزان</h3>
+                  <p className="stat-value">{formatNumber(report.total_farmers_debt)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span></p>
+                </div>
+
+                {/* ردیف ۲ */}
+                <div className="stat-card">
+                  <h3>سود پیمانکار از بذر</h3>
+                  <p className="stat-value">{formatNumber(report.contractor_seed_profit)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span></p>
+                </div>
+
+                <div className="stat-card">
+                  <h3>کارمزد پیمانکار</h3>
+                  <p className="stat-value">{formatNumber(report.contractor_fee)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span></p>
+                </div>
+
+                <div className="stat-card">
+                  <h3>مانده تا تسویه کشاورزان</h3>
+                  <p className="stat-value">{formatNumber(report.farmers_remaining_settlement)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span></p>
+                </div>
+
+                <div className="stat-card" style={{ borderRight: '4px solid #6f42c1' }}>
+                  <h3>جمع طلب از کشاورزان</h3>
+                  <p className="stat-value" style={{ color: '#6f42c1' }}>
+                    {formatNumber(report.total_farmers_receivable)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span>
+                  </p>
+                </div>
+
+                {/* ردیف ۳ */}
+                {/* یک دیو خالی برای حفظ چینش مشابه تصویر اگر نیاز باشد */}
+                <div className="stat-card" style={{ visibility: 'hidden' }}></div> 
+
+                <div className="stat-card" style={{ borderRight: '4px solid #007bff' }}>
+                  <h3>وضعیت کلی پیمانکار</h3>
+                  <p className="stat-value" style={{ direction: 'ltr', color: '#007bff' }}>
+                     {formatNumber(report.overall_contractor_status)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span>
+                  </p>
+                </div>
+
+                <div className="stat-card">
+                  <h3>سود پیمانکار از سم</h3>
+                  <p className="stat-value">{formatNumber(report.contractor_pesticide_profit)} <span style={{fontSize: '0.8rem', color: '#888'}}>تومان</span></p>
+                </div>
+
+              </div>
             </>
+          ) : (
+             <div className="error-message">داده‌ای یافت نشد.</div>
           )}
         </div>
       </main>
